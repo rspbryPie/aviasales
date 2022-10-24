@@ -1,68 +1,56 @@
-import React from 'react';
+/* eslint-disable react/function-component-definition */
 
-import styles from './transfers.module.scss';
+import { useDispatch, useSelector } from 'react-redux'
+
+import { resetMoreTicket } from '../../store/ticketsSlice'
+import { toggleAll, toggleSingle } from '../../store/filter-slice'
+
+import styles from './transfers.module.scss'
 
 const Trasfers = () => {
+  const filters = useSelector((state) => state.filters)
+  const dispatch = useDispatch()
+
   return (
     <div className={styles.filter}>
-      <div className={styles.title}>КОЛИЧЕСТВО ПЕРЕСАДОК</div>
-      <div className={styles.wrapper}>
-        <input
-          type='checkbox'
-          id='all'
-          name='All'
-          className={styles.checkbox}
-        />
-        <label className={styles.label} htmlFor='all'>
-          Все
-        </label>
-      </div>
-      <div className={styles.wrapper}>
-        <input
-          type='checkbox'
-          id='No_transfer'
-          name='Zero'
-          className={styles.checkbox}
-        />
-        <label className={styles.label} htmlFor='No_transfer'>
-          Без пересадок
-        </label>
-      </div>
-      <div className={styles.wrapper}>
-        <input
-          type='checkbox'
-          id='One_transfer'
-          name='One'
-          className={styles.checkbox}
-        />
-        <label className={styles.label} htmlFor='One_transfer'>
-          1 пересадка
-        </label>
-      </div>
-      <div className={styles.wrapper}>
-        <input
-          type='checkbox'
-          id='Two_transfer'
-          name='Two'
-          className={styles.checkbox}
-        />
-        <label className={styles.label} htmlFor='Two_transfer'>
-          2 пересадки
-        </label>
-      </div>
-      <div className={styles.wrapper}>
-        <input
-          type='checkbox'
-          id='Three_transfer'
-          name='Three'
-          className={styles.checkbox}
-        />
-        <label className={styles.label} htmlFor='Three_transfer'>
-          3 пересадки
-        </label>
-      </div>
+      <h2 className={styles.title}>КОЛИЧЕСТВО ПЕРЕСАДОК</h2>
+      <ul className={styles.list}>
+        <li className={styles.item}>
+          <input
+            type="checkbox"
+            className={styles.checkbox}
+            checked={!filters.some((filter) => !filter.isChecked)}
+            onChange={() => {
+              dispatch(toggleAll())
+              dispatch(resetMoreTicket())
+            }}
+            id="all"
+          />
+          <label htmlFor="all">
+            <span>Все</span>
+          </label>
+        </li>
+        {filters.map((filter, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <li className={styles.item} key={index}>
+            <input
+              type="checkbox"
+              className={styles.checkbox}
+              id={filter.stopCount}
+              checked={filter.isChecked}
+              onChange={() => {
+                dispatch(toggleSingle({ stopCount: filter.stopCount }))
+                dispatch(resetMoreTicket())
+              }}
+            />
+            <label htmlFor={filter.stopCount}>
+              <span>{filter.text}</span>
+            </label>
+          </li>
+        ))}
+      </ul>
     </div>
-  );
-};
+  )
+}
 
-export default Trasfers;
+export default Trasfers
